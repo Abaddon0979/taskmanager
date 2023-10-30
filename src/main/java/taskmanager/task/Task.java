@@ -2,7 +2,7 @@ package taskmanager.task;
 
 import java.time.LocalDate;
 
-public class task {
+public class Task {
     private int taskID;
     private String title;
     private String description;
@@ -21,7 +21,7 @@ public class task {
         return taskID;
     }
 
-    public void setID(String taskID) {
+    public void setID(int taskID) {
         this.taskID = taskID;
     }
 
@@ -47,5 +47,13 @@ public class task {
 
     public void setTaskDate (LocalDate taskDate) {
         this.taskDate = taskDate;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setAsDone() {
+        this.done = true;
     }
 }
