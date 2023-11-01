@@ -1,7 +1,9 @@
 package taskmanager.task.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import taskmanager.task.api.exceptions.TaskNotFoundException;
 import taskmanager.task.api.model.Task;
 import taskmanager.task.api.service.TaskService;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.ArrayList;
 @RestController
 public class TaskController {
 
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @Autowired
     public TaskController (TaskService taskService){
@@ -22,12 +24,12 @@ public class TaskController {
     }
 
     @GetMapping("/task")
-    public Task getTaskByID(@RequestParam int taskID){
+    public ResponseEntity<?> getTaskByID(@RequestParam int taskID) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);
         if (task != null){
-            return task;
+            return ResponseEntity.ok(task);
         }
-        return null;
+        throw new TaskNotFoundException("Task " + taskID + " does not exist!");
     }
 
     @PostMapping("/addtask")
@@ -43,8 +45,12 @@ public class TaskController {
     }
 
     @DeleteMapping("/delete")
-    public String deleteTask(@RequestParam int taskID){
-        taskService.deleteTask(taskID);
-        return "Task " + taskID + " deleted successfully!";
+    public String deleteTask(@RequestParam int taskID) throws TaskNotFoundException {
+        Task task = taskService.getTaskByID(taskID);
+        if (task != null){
+            taskService.deleteTask(taskID);
+            return "Task " + taskID + " deleted successfully!";
+        }
+        throw new TaskNotFoundException("Task " + taskID + " does not exist, it may have been already deleted or never existed!");
     }
 }
