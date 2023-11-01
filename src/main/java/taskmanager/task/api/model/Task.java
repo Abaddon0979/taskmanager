@@ -1,4 +1,4 @@
-package taskmanager.task;
+package taskmanager.task.api.model;
 
 import java.time.LocalDate;
 
@@ -14,7 +14,7 @@ public class Task {
         this.title = title;
         this.description = description;
         this.taskDate = taskDate;
-        this.done = false;
+        this.done = done;
     }
 
     public int getID() {
