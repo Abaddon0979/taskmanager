@@ -47,7 +47,7 @@ public class TaskController {
     public String setTaskAsNotDone(@RequestParam int taskID) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);
         if (task != null) {
-            return taskService.setTaskAsNotDone(taskID) ? "Task " + taskID + " successfully marked as done!"
+            return taskService.setTaskAsNotDone(taskID) ? "Task " + taskID + " successfully marked as not done!"
                     : "Task " + taskID + " is already marked as not done!";
         }
         throw new TaskNotFoundException("Task " + taskID + " can't be marked as not done since it does not exist!");

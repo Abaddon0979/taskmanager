@@ -28,9 +28,9 @@ public class TaskServiceImpl implements TaskService {
         Task task9 = new Task(9, "Title9","Desc9", LocalDate.of(2023, 10, 22),false);
         Task task10 = new Task(10, "Title10","Desc10", LocalDate.of(2023, 10, 31),true);
 
-        addTask(task1);
-        addTask(task2);
-        addTask(task3);
+        //addTask(task1);
+        //addTask(task2);
+        //addTask(task3);
     }
     public ArrayList<Task> getAllTasks(){
         ArrayList<Task> allTasks = new ArrayList<>();
@@ -65,12 +65,12 @@ public class TaskServiceImpl implements TaskService {
 
         for (Task task : doneTasks) {
             if (taskID == task.getID()) {
-                if (!task.isDone()) {
-                    int index = toDoTasks.indexOf(task);
-                    toDoTasks.set(index, newTask);
+                if (newTask.isDone()) {
+                    int index = doneTasks.indexOf(task);
+                    doneTasks.set(index, newTask);
                 } else {
-                    toDoTasks.remove(task);
-                    doneTasks.add(newTask);
+                    doneTasks.remove(task);
+                    toDoTasks.add(newTask);
                 }
                 return;
             }
@@ -78,12 +78,12 @@ public class TaskServiceImpl implements TaskService {
 
         for (Task task : toDoTasks) {
             if (taskID == task.getID()) {
-                if (task.isDone()) {
-                    int index = doneTasks.indexOf(task);
-                    doneTasks.set(index, newTask);
+                if (!newTask.isDone()) {
+                    int index = toDoTasks.indexOf(task);
+                    toDoTasks.set(index, newTask);
                 } else {
-                    doneTasks.remove(task);
-                    toDoTasks.add(newTask);
+                    toDoTasks.remove(task);
+                    doneTasks.add(newTask);
                 }
                 return;
             }
@@ -119,7 +119,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = getTaskByID(taskID);
         if (doneTasks.contains(task)) {
             doneTasks.remove(task);
-            task.setAsDone();
+            task.setAsNotDone();
             toDoTasks.add(task);
             return true;
         }
