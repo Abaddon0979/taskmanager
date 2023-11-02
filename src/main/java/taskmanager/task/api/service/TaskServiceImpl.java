@@ -9,13 +9,11 @@ import java.util.ArrayList;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private ArrayList<Task> taskList;
     private ArrayList<Task> toDoTasks;
     private ArrayList<Task> doneTasks;
 
     public TaskServiceImpl(){
 
-        taskList = new ArrayList<>();
         toDoTasks = new ArrayList<>();
         doneTasks = new ArrayList<>();
 
@@ -30,17 +28,26 @@ public class TaskServiceImpl implements TaskService {
         Task task9 = new Task(9, "Title9","Desc9", LocalDate.of(2023, 10, 22),false);
         Task task10 = new Task(10, "Title10","Desc10", LocalDate.of(2023, 10, 31),true);
 
-        taskList.add(task1);
-        taskList.add(task2);
-        taskList.add(task3);
+        addTask(task1);
+        addTask(task2);
+        addTask(task3);
     }
     public ArrayList<Task> getAllTasks(){
-        return taskList;
+        ArrayList<Task> allTasks = new ArrayList<>();
+        allTasks.addAll(toDoTasks);
+        allTasks.addAll(doneTasks);
+        return allTasks;
     }
 
     @Override
     public Task getTaskByID(int taskID) {
-        for (Task task : taskList){
+        for (Task task : toDoTasks){
+            if (taskID == task.getID()){
+                return task;
+            }
+        }
+
+        for (Task task : doneTasks){
             if (taskID == task.getID()){
                 return task;
             }
@@ -50,16 +57,35 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void addTask(Task task) {
-        taskList.add(task);
         (task.isDone() ? doneTasks : toDoTasks).add(task);
     }
 
     @Override
-    public void modifyTask(int taskID, Task newTask){
-        for (Task task : taskList){
-            if (taskID == task.getID()){
-                int index = taskList.indexOf(task);
-                taskList.set(index, newTask);
+    public void modifyTask(int taskID, Task newTask) {
+
+        for (Task task : doneTasks) {
+            if (taskID == task.getID()) {
+                if (!task.isDone()) {
+                    int index = toDoTasks.indexOf(task);
+                    toDoTasks.set(index, newTask);
+                } else {
+                    toDoTasks.remove(task);
+                    doneTasks.add(newTask);
+                }
+                return;
+            }
+        }
+
+        for (Task task : toDoTasks) {
+            if (taskID == task.getID()) {
+                if (task.isDone()) {
+                    int index = doneTasks.indexOf(task);
+                    doneTasks.set(index, newTask);
+                } else {
+                    doneTasks.remove(task);
+                    toDoTasks.add(newTask);
+                }
+                return;
             }
         }
     }
@@ -67,15 +93,37 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTask (int taskID){
         Task taskToDelete = getTaskByID(taskID);
-        if (taskToDelete != null){
-            taskList.remove(taskToDelete);
-        }
+            if (toDoTasks.contains(taskToDelete)){
+                toDoTasks.remove(taskToDelete);
+            }
+
+            if (doneTasks.contains(taskToDelete)){
+                doneTasks.remove(taskToDelete);
+            }
     }
 
-    public void moveTaskToDone(Task task) {
-        toDoTasks.remove(task);
-        task.setAsDone();
-        doneTasks.add(task);
+    @Override
+    public boolean setTaskAsDone(int taskID) {
+        Task task = getTaskByID(taskID);
+        if (toDoTasks.contains(task)){
+            toDoTasks.remove(task);
+            task.setAsDone();
+            doneTasks.add(task);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean setTaskAsNotDone(int taskID){
+        Task task = getTaskByID(taskID);
+        if (doneTasks.contains(task)) {
+            doneTasks.remove(task);
+            task.setAsDone();
+            toDoTasks.add(task);
+            return true;
+        }
+        return false;
     }
 
     public void printTasks() {

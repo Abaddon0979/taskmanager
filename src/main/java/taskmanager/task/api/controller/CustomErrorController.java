@@ -32,7 +32,7 @@ public class CustomErrorController implements ErrorController {
         }
 
         if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()){
-            return "An unexpected error has occured!";
+            return "An unexpected error has occurred!";
         }
         return null;
     }

@@ -19,7 +19,6 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/alltasks")
     public ArrayList<Task> getAllTasks(){
         return taskService.getAllTasks();
@@ -28,10 +27,30 @@ public class TaskController {
     @GetMapping("/task")
     public ResponseEntity<?> getTaskByID(@RequestParam int taskID) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);
-        if (task != null){
+        if (task != null) {
             return ResponseEntity.ok(task);
         }
         throw new TaskNotFoundException("Task " + taskID + " does not exist!");
+    }
+
+    @GetMapping("/setasdone")
+    public String setTaskAsDone(@RequestParam int taskID) throws TaskNotFoundException {
+        Task task = taskService.getTaskByID(taskID);
+        if (task != null) {
+            return taskService.setTaskAsDone(taskID) ? "Task " + taskID + " successfully marked as done!"
+                    : "Task " + taskID + " is already marked as done!";
+        }
+        throw new TaskNotFoundException("Task " + taskID + " doesn't exist!");
+    }
+
+    @GetMapping("/setasnotdone")
+    public String setTaskAsNotDone(@RequestParam int taskID) throws TaskNotFoundException {
+        Task task = taskService.getTaskByID(taskID);
+        if (task != null) {
+            return taskService.setTaskAsNotDone(taskID) ? "Task " + taskID + " successfully marked as done!"
+                    : "Task " + taskID + " is already marked as not done!";
+        }
+        throw new TaskNotFoundException("Task " + taskID + " can't be marked as not done since it does not exist!");
     }
 
     @PostMapping("/addtask")
@@ -45,7 +64,7 @@ public class TaskController {
         taskService.modifyTask(taskID, newTask);
         return "Task " + taskID + " modified successfully!";
     }
-
+    
     @DeleteMapping("/delete")
     public String deleteTask(@RequestParam int taskID) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);

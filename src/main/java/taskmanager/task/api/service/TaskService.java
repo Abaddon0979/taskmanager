@@ -14,4 +14,6 @@ public interface TaskService {
     void addTask (Task task);
     void modifyTask (int taskID, Task newTask);
     void deleteTask (int taskID) throws TaskNotFoundException;
+    boolean setTaskAsDone(int taskID) throws TaskNotFoundException;
+    boolean setTaskAsNotDone(int taskID) throws TaskNotFoundException;
 }
