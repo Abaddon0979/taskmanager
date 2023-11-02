@@ -20,7 +20,11 @@ public class CustomErrorController implements ErrorController {
         }
 
         if (statusCode == HttpStatus.UNAUTHORIZED.value()){
-            return "You are not authorized to perform this action!";
+            return "Authentication failed! Please check your username and password!";
+        }
+
+        if (statusCode == HttpStatus.FORBIDDEN.value()){
+            return "You are not allowed to access this resource!";
         }
 
         if (statusCode == HttpStatus.BAD_REQUEST.value()){
