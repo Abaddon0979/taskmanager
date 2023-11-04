@@ -1,6 +1,7 @@
 package taskmanager.task.api.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Task {
     private int taskID;
@@ -53,11 +54,15 @@ public class Task {
         return done;
     }
 
-    public void setAsDone() {
+    public void setAsDone(ArrayList<Task> toDoTasks, ArrayList<Task> doneTasks) {
         this.done = true;
+        toDoTasks.remove(this);
+        doneTasks.add(this);
     }
 
-    public void setAsNotDone() {
+    public void setAsNotDone(ArrayList<Task> toDoTasks, ArrayList<Task> doneTasks) {
         this.done = false;
+        doneTasks.remove(this);
+        toDoTasks.add(this);
     }
 }

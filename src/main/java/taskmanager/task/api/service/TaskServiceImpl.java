@@ -61,31 +61,33 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void modifyTask(int taskID, Task newTask) {
+    public void modifyTitle(int taskID, String newTitle) {
 
         for (Task task : doneTasks) {
             if (taskID == task.getID()) {
-                if (newTask.isDone()) {
-                    int index = doneTasks.indexOf(task);
-                    doneTasks.set(index, newTask);
-                } else {
-                    doneTasks.remove(task);
-                    toDoTasks.add(newTask);
-                }
-                return;
+                task.setTitle(newTitle);
             }
         }
 
         for (Task task : toDoTasks) {
             if (taskID == task.getID()) {
-                if (!newTask.isDone()) {
-                    int index = toDoTasks.indexOf(task);
-                    toDoTasks.set(index, newTask);
-                } else {
-                    toDoTasks.remove(task);
-                    doneTasks.add(newTask);
-                }
-                return;
+                task.setTitle(newTitle);
+            }
+        }
+    }
+
+    @Override
+    public void modifyDescription(int taskID, String newDescription) {
+
+        for (Task task : doneTasks) {
+            if (taskID == task.getID()) {
+                task.setDescription(newDescription);
+            }
+        }
+
+        for (Task task : toDoTasks) {
+            if (taskID == task.getID()) {
+                task.setDescription(newDescription);
             }
         }
     }
@@ -103,24 +105,18 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public boolean setTaskAsDone(int taskID) {
-        Task task = getTaskByID(taskID);
+    public boolean setTaskAsDone(Task task) {
         if (toDoTasks.contains(task)){
-            toDoTasks.remove(task);
-            task.setAsDone();
-            doneTasks.add(task);
+            task.setAsDone(toDoTasks,doneTasks);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean setTaskAsNotDone(int taskID){
-        Task task = getTaskByID(taskID);
+    public boolean setTaskAsNotDone(Task task){
         if (doneTasks.contains(task)) {
-            doneTasks.remove(task);
-            task.setAsNotDone();
-            toDoTasks.add(task);
+            task.setAsNotDone(toDoTasks, doneTasks);
             return true;
         }
         return false;

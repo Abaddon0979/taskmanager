@@ -54,13 +54,37 @@ public class TaskServiceTest {
     }
 
     @Test
+    void modifyTitleTest() throws TaskNotFoundException {
+        TaskService taskService = new TaskServiceImpl();
+        Task task = new Task(1,"Test1","TestDesc1", LocalDate.now(),false);
+
+        taskService.addTask(task);
+
+        taskService.modifyTitle(1, "Test1Modified");
+
+        assertEquals(task.getTitle(), "Test1Modified");
+    }
+
+    @Test
+    void modifyDescriptionTest() throws TaskNotFoundException {
+        TaskService taskService = new TaskServiceImpl();
+        Task task = new Task(1,"Test1","TestDesc1", LocalDate.now(),false);
+
+        taskService.addTask(task);
+
+        taskService.modifyDescription(1, "TestDesc1Modified");
+
+        assertEquals(task.getDescription(), "TestDesc1Modified");
+    }
+
+    @Test
     void setTaskAsDoneTest() throws TaskNotFoundException {
         TaskService taskService = new TaskServiceImpl();
         Task task = new Task(1,"Test1","TestDesc1", LocalDate.now(),false);
 
         taskService.addTask(task);
 
-        taskService.setTaskAsDone(1);
+        taskService.setTaskAsDone(task);
 
         assertTrue(task.isDone());
     }
@@ -72,24 +96,9 @@ public class TaskServiceTest {
 
         taskService.addTask(task);
 
-        taskService.setTaskAsNotDone(1);
+        taskService.setTaskAsNotDone(task);
 
         assertFalse(task.isDone());
-    }
-
-    @Test
-    void modifyTaskTest() throws TaskNotFoundException {
-        TaskService taskService = new TaskServiceImpl();
-        Task task = new Task(1,"Test1","TestDesc1", LocalDate.now(),false);
-
-        taskService.addTask(task);
-
-        Task newTask = new Task (1,"Test2","TestDesc2", LocalDate.now(),true);
-        taskService.modifyTask(1, newTask);
-
-        Task resultTask = taskService.getTaskByID(1);
-        assertNotNull(resultTask);
-        assertEquals(newTask, resultTask);
     }
 
     @Test

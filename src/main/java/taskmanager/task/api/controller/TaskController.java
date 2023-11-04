@@ -19,7 +19,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping("/alltasks")
+    @GetMapping("/all-tasks")
     public ArrayList<Task> getAllTasks(){
         return taskService.getAllTasks();
     }
@@ -33,36 +33,50 @@ public class TaskController {
         throw new TaskNotFoundException("Task " + taskID + " does not exist!");
     }
 
-    @GetMapping("/setasdone")
+    @GetMapping("/set-as-done")
     public String setTaskAsDone(@RequestParam int taskID) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);
         if (task != null) {
-            return taskService.setTaskAsDone(taskID) ? "Task " + taskID + " successfully marked as done!"
+            return taskService.setTaskAsDone(task) ? "Task " + taskID + " successfully marked as done!"
                     : "Task " + taskID + " is already marked as done!";
         }
         throw new TaskNotFoundException("Task " + taskID + " doesn't exist!");
     }
 
-    @GetMapping("/setasnotdone")
+    @GetMapping("/set-as-not-done")
     public String setTaskAsNotDone(@RequestParam int taskID) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);
         if (task != null) {
-            return taskService.setTaskAsNotDone(taskID) ? "Task " + taskID + " successfully marked as not done!"
+            return taskService.setTaskAsNotDone(task) ? "Task " + taskID + " successfully marked as not done!"
                     : "Task " + taskID + " is already marked as not done!";
         }
         throw new TaskNotFoundException("Task " + taskID + " can't be marked as not done since it does not exist!");
     }
 
-    @PostMapping("/addtask")
+    @PostMapping("/add-task")
     public String addTask(@RequestBody Task task){
         taskService.addTask(task);
         return "New task added successfully!";
     }
 
-    @PutMapping("/modify")
-    public String modifyTask(@RequestParam int taskID, @RequestBody Task newTask){
-        taskService.modifyTask(taskID, newTask);
-        return "Task " + taskID + " modified successfully!";
+    @PostMapping("/modify-title")
+    public String modifyTitle(@RequestParam int taskID, @RequestBody String newTitle) throws TaskNotFoundException {
+        Task task = taskService.getTaskByID(taskID);
+        if (task != null) {
+            taskService.modifyTitle(taskID, newTitle);
+            return "Title of task " + taskID + " modified successfully!";
+        }
+        throw new TaskNotFoundException("Task " + taskID + " can't be modified, since it does not exist!");
+    }
+
+    @PostMapping("/modify-description")
+    public String modifyDescription(@RequestParam int taskID, @RequestBody String newDescription) throws TaskNotFoundException {
+        Task task = taskService.getTaskByID(taskID);
+        if (task != null) {
+            taskService.modifyTitle(taskID, newDescription);
+            return "Title of task " + taskID + " modified successfully!";
+        }
+        throw new TaskNotFoundException("Task " + taskID + " can't be modified, since it does not exist!");
     }
     
     @DeleteMapping("/delete")

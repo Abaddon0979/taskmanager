@@ -12,8 +12,9 @@ public interface TaskService {
     ArrayList<Task> getAllTasks();
     Task getTaskByID(int taskID) throws TaskNotFoundException;
     void addTask (Task task);
-    void modifyTask (int taskID, Task newTask);
+    void modifyTitle (int taskID, String newTitle);
+    void modifyDescription (int taskID, String newDescription);
     void deleteTask (int taskID) throws TaskNotFoundException;
-    boolean setTaskAsDone(int taskID) throws TaskNotFoundException;
-    boolean setTaskAsNotDone(int taskID) throws TaskNotFoundException;
+    boolean setTaskAsDone(Task task) throws TaskNotFoundException;
+    boolean setTaskAsNotDone(Task task) throws TaskNotFoundException;
 }
