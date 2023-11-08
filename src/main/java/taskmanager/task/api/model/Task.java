@@ -1,20 +1,30 @@
 package taskmanager.task.api.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+@Entity
 public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int taskID;
     private String title;
     private String description;
-    private LocalDate taskDate;
+    private LocalDate dueDate;
     private boolean done;
 
-    public Task (int taskID, String title, String description, LocalDate taskDate, boolean done) {
+    public Task(){
+    }
+    public Task (int taskID, String title, String description, LocalDate dueDate, boolean done) {
         this.taskID = taskID;
         this.title = title;
         this.description = description;
-        this.taskDate = taskDate;
+        this.dueDate = dueDate;
         this.done = done;
     }
 
@@ -42,17 +52,19 @@ public class Task {
         this.description = description;
     }
 
-    public LocalDate getTaskDate() {
-        return taskDate;
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
-    public void setTaskDate (LocalDate taskDate) {
-        this.taskDate = taskDate;
+    public void setDueDate (LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
     public boolean isDone() {
         return done;
     }
+
+    public void setDoneStatus(Boolean done) {this.done = done;}
 
     public void setAsDone(ArrayList<Task> toDoTasks, ArrayList<Task> doneTasks) {
         this.done = true;

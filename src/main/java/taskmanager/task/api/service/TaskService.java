@@ -6,15 +6,17 @@ import taskmanager.task.api.model.Task;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public interface TaskService {
-    ArrayList<Task> getAllTasks();
+    List<Task> getAllTasks();
     Task getTaskByID(int taskID) throws TaskNotFoundException;
     void addTask (Task task);
     void modifyTitle (int taskID, String newTitle);
     void modifyDescription (int taskID, String newDescription);
+    void modifyDueDate(int taskID, LocalDate dueDate);
     void deleteTask (int taskID) throws TaskNotFoundException;
-    boolean setTaskAsDone(Task task) throws TaskNotFoundException;
-    boolean setTaskAsNotDone(Task task) throws TaskNotFoundException;
+    boolean setTaskAsDone(int taskID) throws TaskNotFoundException;
+    boolean setTaskAsNotDone(int taskID) throws TaskNotFoundException;
 }

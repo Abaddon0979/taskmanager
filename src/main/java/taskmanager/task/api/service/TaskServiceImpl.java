@@ -2,20 +2,19 @@ package taskmanager.task.api.service;
 
 import org.springframework.stereotype.Service;
 import taskmanager.task.api.model.Task;
+import taskmanager.task.api.repository.TaskRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private ArrayList<Task> toDoTasks;
-    private ArrayList<Task> doneTasks;
+    private final TaskRepository taskRepository;
 
-    public TaskServiceImpl(){
+    public TaskServiceImpl(TaskRepository taskRepository){
 
-        toDoTasks = new ArrayList<>();
-        doneTasks = new ArrayList<>();
+        this.taskRepository = taskRepository;
 
         Task task1 = new Task(1, "Title1","Desc1", LocalDate.of(2023, 2, 25),false);
         Task task2 = new Task(2, "Title2","Desc2", LocalDate.of(2023, 2, 26),false);
@@ -28,109 +27,80 @@ public class TaskServiceImpl implements TaskService {
         Task task9 = new Task(9, "Title9","Desc9", LocalDate.of(2023, 10, 22),false);
         Task task10 = new Task(10, "Title10","Desc10", LocalDate.of(2023, 10, 31),true);
 
-        //addTask(task1);
-        //addTask(task2);
-        //addTask(task3);
+        addTask(task1);
+        addTask(task2);
+        addTask(task3);
     }
-    public ArrayList<Task> getAllTasks(){
-        ArrayList<Task> allTasks = new ArrayList<>();
-        allTasks.addAll(toDoTasks);
-        allTasks.addAll(doneTasks);
-        return allTasks;
+    public List<Task> getAllTasks(){
+        return taskRepository.findAll();
     }
 
     @Override
     public Task getTaskByID(int taskID) {
-        for (Task task : toDoTasks){
-            if (taskID == task.getID()){
-                return task;
-            }
-        }
-
-        for (Task task : doneTasks){
-            if (taskID == task.getID()){
-                return task;
-            }
-        }
-        return null;
+        return taskRepository.findById(taskID).orElse(null);
     }
 
     @Override
     public void addTask(Task task) {
-        (task.isDone() ? doneTasks : toDoTasks).add(task);
+        taskRepository.save(task);
     }
 
     @Override
     public void modifyTitle(int taskID, String newTitle) {
-
-        for (Task task : doneTasks) {
-            if (taskID == task.getID()) {
-                task.setTitle(newTitle);
-            }
-        }
-
-        for (Task task : toDoTasks) {
-            if (taskID == task.getID()) {
-                task.setTitle(newTitle);
-            }
+        Task task = getTaskByID(taskID);
+        if (task != null) {
+            task.setTitle(newTitle);
+            taskRepository.save(task);
         }
     }
 
     @Override
     public void modifyDescription(int taskID, String newDescription) {
-
-        for (Task task : doneTasks) {
-            if (taskID == task.getID()) {
-                task.setDescription(newDescription);
-            }
+        Task task = getTaskByID(taskID);
+        if (task != null) {
+            task.setDescription(newDescription);
+            taskRepository.save(task);
         }
+    }
 
-        for (Task task : toDoTasks) {
-            if (taskID == task.getID()) {
-                task.setDescription(newDescription);
-            }
+    @Override
+    public void modifyDueDate(int taskID, LocalDate newDueDate) {
+        Task task = getTaskByID(taskID);
+        if (task != null) {
+            task.setDueDate(newDueDate);
+            taskRepository.save(task);
         }
     }
 
     @Override
     public void deleteTask (int taskID){
         Task taskToDelete = getTaskByID(taskID);
-            if (toDoTasks.contains(taskToDelete)){
-                toDoTasks.remove(taskToDelete);
-            }
-
-            if (doneTasks.contains(taskToDelete)){
-                doneTasks.remove(taskToDelete);
-            }
+        taskRepository.delete(taskToDelete);
     }
 
     @Override
-    public boolean setTaskAsDone(Task task) {
-        if (toDoTasks.contains(task)){
-            task.setAsDone(toDoTasks,doneTasks);
+    public boolean setTaskAsDone(int taskID){
+        Task task = getTaskByID(taskID);
+
+        if (task.isDone()) {
+            task.setDoneStatus(true);
+            taskRepository.save(task);
             return true;
         }
+
         return false;
     }
 
     @Override
-    public boolean setTaskAsNotDone(Task task){
-        if (doneTasks.contains(task)) {
-            task.setAsNotDone(toDoTasks, doneTasks);
+    public boolean setTaskAsNotDone(int taskID){
+        Task task = getTaskByID(taskID);
+
+        if (task.isDone()) {
+            task.setDoneStatus(false);
+            taskRepository.save(task);
             return true;
         }
+
         return false;
-    }
-
-    public void printTasks() {
-        System.out.println("To do:");
-        for (Task task : toDoTasks) {
-            System.out.println("ID: " + task.getID() + " Title: " + task.getTitle() + " Description: " + task.getDescription() + " Date: " + task.getTaskDate());
-        }
-
-        System.out.println("\nDone:");
-        for (Task task : doneTasks) {
-            System.out.println("ID: " + task.getID() + " Title: " + task.getTitle() + " Description: " + task.getDescription() + " Date: " + task.getTaskDate());
-        }
     }
 }
