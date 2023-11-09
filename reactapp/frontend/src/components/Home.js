@@ -1,7 +1,7 @@
 import React from 'react';
 import Appbar from './Appbar';
 
-const Index = () => {
+const Home = () => {
     return (
         <div>
             <Appbar />
@@ -9,4 +9,4 @@ const Index = () => {
     );
 }
 
-export default Index;
+export default Home;

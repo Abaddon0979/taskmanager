@@ -39,7 +39,7 @@ export default function Appbar() {
             Task Manager
           </Typography>
           <Link to="/login" style={{textDecoration: 'none', color: 'inherit'}}>
-            <Button color="inherit">Login</Button>
+            <Button color="inherit">Sign In</Button>
           </Link>
         </Toolbar>
       </AppBar>

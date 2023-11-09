@@ -6,6 +6,7 @@ import taskmanager.task.api.service.TaskServiceImpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +19,7 @@ public class TaskServiceTest {
 
         taskService.addTask(task);
 
-        ArrayList<Task> allTasks = taskService.getAllTasks();
+        List<Task> allTasks = taskService.getAllTasks();
         assertEquals(1, allTasks.size());
         assertEquals(task, allTasks.get(0));
     }
@@ -34,7 +35,7 @@ public class TaskServiceTest {
         taskService.addTask(task2);
         taskService.addTask(task3);
 
-        ArrayList<Task> allTasks = taskService.getAllTasks();
+        List<Task> allTasks = taskService.getAllTasks();
         assertEquals(3, allTasks.size());
         assertTrue(allTasks.contains(task1));
         assertTrue(allTasks.contains(task2));

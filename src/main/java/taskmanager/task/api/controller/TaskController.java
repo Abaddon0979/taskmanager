@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import taskmanager.task.api.exceptions.TaskNotFoundException;
 import taskmanager.task.api.model.Task;
 import taskmanager.task.api.service.TaskService;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -53,6 +55,21 @@ public class TaskController {
         throw new TaskNotFoundException("Task " + taskID + " can't be marked as not done since it does not exist!");
     }
 
+    @PostMapping("/api/change-status")
+    public String toggleDoneStatus(@RequestParam int taskID) throws TaskNotFoundException{
+        Task task = taskService.getTaskByID(taskID);
+        if (task!= null) {
+            if (task.isDone()){
+                taskService.setTaskAsNotDone(taskID);
+                return "Task status successfully changed!";
+            } else {
+                taskService.setTaskAsDone(taskID);
+                return "Task status successfully changed!";
+            }
+        }
+        throw new TaskNotFoundException("Status of task " + taskID + " can't be changed since it does not exist!");
+    }
+
     @PostMapping("/api/add-task")
     public String addTask(@RequestBody Task task){
         taskService.addTask(task);
@@ -73,12 +90,22 @@ public class TaskController {
     public String modifyDescription(@RequestParam int taskID, @RequestBody String newDescription) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);
         if (task != null) {
-            taskService.modifyTitle(taskID, newDescription);
-            return "Title of task " + taskID + " modified successfully!";
+            taskService.modifyDescription(taskID, newDescription);
+            return "Description of task " + taskID + " modified successfully!";
         }
         throw new TaskNotFoundException("Task " + taskID + " can't be modified, since it does not exist!");
     }
-    
+
+    @PostMapping("/api/modify-date")
+    public String modifyDate(@RequestParam int taskID, @RequestBody LocalDate newDate) throws TaskNotFoundException{
+        Task task = taskService.getTaskByID(taskID);
+        if (task != null) {
+            taskService.modifyDueDate(taskID, newDate);
+            return "Due date of task " + taskID + " modified successfully!";
+        }
+        throw new TaskNotFoundException("Task " + taskID + " can't be modified, since it does not exist!");
+    }
+
     @DeleteMapping("/api/delete")
     public String deleteTask(@RequestParam int taskID) throws TaskNotFoundException {
         Task task = taskService.getTaskByID(taskID);

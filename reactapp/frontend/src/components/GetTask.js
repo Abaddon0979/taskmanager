@@ -7,10 +7,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Appbar from './Appbar';
+import axios from 'axios';
 
 export default function GetTask() {
     const paperStyle = { padding: '20px 20px', width: 600, margin: '20px auto' };
-    const [taskID, setTaskID] = useState('');
+    const [id, setTaskID] = useState('');
     const [task, setTask] = useState(null);
     const [isTaskIDNumeric, setIsTaskIDNumeric] = useState(true);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -25,23 +26,17 @@ export default function GetTask() {
         setChangesMade(true);
     };
 
-    const handleClick = (e) => {
+    const handleClick = async (e) => {
         e.preventDefault();
         if (isTaskIDNumeric) {
-            const fetchedTask = getTaskData(taskID);
-            setTask(fetchedTask);
-            setSubmitClicked(true);
+            try {
+                const response = await axios.get(`http://localhost:8080/api/task?taskID=${id}`);
+                setTask(response.data);
+                setSubmitClicked(true);
+            } catch (error) {
+                console.error('Error fetching task:', error);
+            }
         }
-    }
-
-    const getTaskData = (taskID) => {
-        return {
-            taskID: taskID,
-            title: 'Sample Task Title',
-            description: 'Sample Task Description',
-            dueDate: '2023-11-30',
-            doneStatus: false
-        };
     }
 
     const handleTitleChange = (e) => {
@@ -54,31 +49,66 @@ export default function GetTask() {
         setChangesMade(true);
     }
 
-    const handleSaveChanges = () => {
-        const updatedTask = { ...task };
-
-        if (selectedDate) {
-            updatedTask.dueDate = selectedDate.format('YYYY-MM-DD');
+    const handleSaveChanges = async () => {
+        try {
+            if (tempTitle !== null) {
+                const titleResponse = await axios.post(`http://localhost:8080/api/modify-title?taskID=${task.id}`, tempTitle, {
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                });
+                setTask(prevTask => ({
+                    ...prevTask,
+                    title: tempTitle
+                }))
+                console.log(titleResponse.data);
+            }
+    
+            if (tempDescription !== null) {
+                const descriptionResponse = await axios.post(`http://localhost:8080/api/modify-description?taskID=${task.id}`, tempDescription, {
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                });
+                setTask(prevTask => ({
+                    ...prevTask,
+                    description: tempDescription
+                }))
+                console.log(descriptionResponse.data);
+            }
+    
+            if (selectedDate !== null) {
+                const formattedDate = selectedDate.format('YYYY-MM-DD');
+                console.log(formattedDate)
+                const dateResponse = await axios.post(`http://localhost:8080/api/modify-date?taskID=${task.id}`, formattedDate, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                setTask(prevTask => ({
+                    ...prevTask,
+                    dueDate: formattedDate
+                }))
+                console.log(dateResponse.data);
+            }
+    
+            setChangesMade(false);
+        } catch (error) {
+            console.error('Error updating task:', error);
         }
-
-        if (tempTitle) {
-            updatedTask.title = tempTitle;
-        }
-
-        if (tempDescription) {
-            updatedTask.description = tempDescription;
-        }
-
-        setTask(updatedTask);
-        setChangesMade(false);
     }
 
-    const handleToggleDoneStatus = () => {
-        setTask((prevTask) => ({
-            ...prevTask,
-            doneStatus: !prevTask.doneStatus,
-        }));
-        setChangesMade(true);
+    const handleToggleDoneStatus = async () => {
+        try {
+            const response = await axios.post(`http://localhost:8080/api/change-status?taskID=${task.id}`);
+            setTask(prevTask => ({
+                ...prevTask,
+                done: !prevTask.done
+            }));
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error toggling done status:', error);
+        }
     };
 
     const handleModifyClicked = () => {
@@ -89,12 +119,17 @@ export default function GetTask() {
         setModifyClicked(false);
     }
 
-    const handleDeleteTask = () => {
-        const confirmDelete = window.confirm(`Are you sure you want to delete task ${task.taskID}?`);
+    const handleDeleteTask = async () => {
+        const confirmDelete = window.confirm(`Are you sure you want to delete task ${task.id}?`);
         if (confirmDelete) {
-            setTask(null);
-            resetForm();
-            alert(`Task ${task.taskID} has been successfully deleted`);
+            try {
+                await axios.delete(`http://localhost:8080/api/delete?taskID=${task.id}`);
+                setTask(null);
+                resetForm();
+                alert(`Task ${task.id} has been successfully deleted`);
+            } catch (error) {
+                console.error('Error deleting task:', error);
+            }
         }
     };
 
@@ -129,14 +164,14 @@ export default function GetTask() {
                             label="Task ID"
                             variant="outlined"
                             fullWidth
-                            value={taskID}
+                            value={id}
                             onChange={(e) => {
                                 const value = e.target.value;
                                 setTaskID(value);
                                 setIsTaskIDNumeric(/^\d+$/.test(value));
                             }}
                             onBlur={() => {
-                                setIsTaskIDNumeric(/^\d+$/.test(taskID));
+                                setIsTaskIDNumeric(/^\d+$/.test(id));
                             }}
                             error={!isTaskIDNumeric}
                             helperText={!isTaskIDNumeric && 'Please enter a numeric value'}
@@ -147,7 +182,7 @@ export default function GetTask() {
 
                         {task && (
                             <div>
-                                <h2>Task ID: {task.taskID}</h2>
+                                <h2>Task ID: {task.id}</h2>
                                 <div style={{ marginBottom: '8px' }}>
                                     <p><strong>Title:</strong> {task.title}</p>
                                 </div>
@@ -158,9 +193,9 @@ export default function GetTask() {
                                     <p><strong>Due Date:</strong> {task.dueDate}</p>
                                 </div>
                                 <div style={{ marginBottom: '8px' }}>
-                                    <p><strong>Done Status:</strong> {task.doneStatus ? 'Done' : 'Not Done'}</p>
+                                    <p><strong>Done Status:</strong> {task.done ? 'Done' : 'Not Done'}</p>
                                     <Button variant="contained" onClick={handleToggleDoneStatus} style={{ height: '40px' }}>
-                                        {task.doneStatus ? 'Set as Not Done' : 'Set as Done'}
+                                        {task.done ? 'Set as Not Done' : 'Set as Done'}
                                     </Button>
                                 </div>
                             </div>

@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-const LOGIN_URL = '/api/login';
+const LOGIN_URL = '/api/auth/signin';
 
 const Login = () => {
   const { setAuth } = useContext(AuthContext);
@@ -39,9 +39,13 @@ const Login = () => {
           withCredentials: true,
         }
       );
-      const accessToken = response?.data?.accessToken;
-      const roles = response?.data?.roles;
-      setAuth({ username, password, roles, accessToken });
+      const accessToken = response?.data?.token;
+      const role = response?.data?.role;
+
+      console.log(accessToken);
+
+      setAuth({ username, password, role, accessToken });
+      sessionStorage.setItem('token', accessToken);
       setUsername('');
       setPassword('');
       setSuccess(true);
@@ -69,7 +73,7 @@ const Login = () => {
             <h1>You are logged in!</h1>
             <br />
             <p>
-              <a href="http://localhost:3000/index">Go to homepage</a>
+              <a href="/">Go to homepage</a>
             </p>
           </section>
         ) : (

@@ -16,7 +16,7 @@ import axios from 'axios';
 
 export default function AddTask() {  
     const paperStyle={padding: '20px 20px', width: 600, margin: '20px auto'}
-    const [taskID, setTaskID]=useState('')
+    const [id, setTaskID]=useState('')
     const [title, setTitle]=useState('')
     const [description, setDescription]=useState('')
     const [done, setDoneStatus] = useState(false);
@@ -25,7 +25,7 @@ export default function AddTask() {
     const handleClick = (e) => {
       e.preventDefault()
       const formattedDate = selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : null;
-      const task = {taskID, title, description, dueDate: formattedDate, done}
+      const task = {id, title, description, dueDate: formattedDate, done}
       axios.post('http://localhost:8080/api/add-task', task)
         .then((response) => {
           console.log('Task added successfully:', response.data);
@@ -45,7 +45,7 @@ export default function AddTask() {
     
 
   return (
-    <><Appbar />
+    <><Appbar/>
     
     <Box
       component="form"
@@ -62,7 +62,7 @@ export default function AddTask() {
 
           <TextField id="outlined-basic" label="Task ID" variant="outlined"
             fullWidth
-            value={taskID}
+            value={id}
             onChange={(e) => setTaskID(e.target.value)}
             sx={{ mb: 1 }} />
 

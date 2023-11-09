@@ -11,7 +11,6 @@ import java.util.ArrayList;
 @Entity
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int taskID;
     private String title;
     private String description;

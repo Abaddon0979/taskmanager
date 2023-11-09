@@ -82,7 +82,7 @@ public class TaskServiceImpl implements TaskService {
     public boolean setTaskAsDone(int taskID){
         Task task = getTaskByID(taskID);
 
-        if (task.isDone()) {
+        if (!task.isDone()) {
             task.setDoneStatus(true);
             taskRepository.save(task);
             return true;
